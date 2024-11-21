@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Sidebar Menu -->
+    <div class="menu-icon">
+      <img src="menuIcon.png" alt="Menu Icon" />
+    </div>
+    <nav class="sidebar-menu">
+      <ul>
+        <li><a href="index.html">All Tasks</a></li>
+        <li><a href="index.html?category=prioritized">Prioritized Tasks</a></li>
+        <li><a href="index.html?category=due2">Due in 2 Days</a></li>
+        <li><a href="index.html?category=overdue">Overdue Tasks</a></li>
+      </ul>
+      <hr />
+      <ul id="category-list">
+        <!-- Categories will load dynamically here -->
+      </ul>
+      <button id="add-category-button">+ Add Category</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="all-tasks">
+      <h1>To-Do List</h1>
+      <div class="add-task">
+        <button id="add-task-button">+</button>
+      </div>
+      <div class="task-container">
+        <!-- Tasks will load dynamically here -->
+      </div>
+    </main>
+
+    <script src="scripts.js"></script>
+  </body>
+</html>
