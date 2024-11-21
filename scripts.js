@@ -212,14 +212,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Display task in the task container
   function displayTask(task) {
+    // Create the main container for the task
     const taskDiv = document.createElement('div');
     taskDiv.classList.add('task');
     taskDiv.dataset.id = task.id || Date.now();
 
-    // Task row with title, checkbox, and buttons
+    // Row 1: Includes the checkbox, title, and control buttons
     const row1 = document.createElement('div');
     row1.classList.add('task-row');
 
+    // Checkbox to mark task as completed or not
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.classList.add('task-checkbox');
@@ -228,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
       task.completed = checkbox.checked;
       saveTask(task);
 
-      // Auto-delete completed tasks after 2 seconds
+      // Automatically delete the task after 2 seconds if marked as completed
       if (task.completed) {
         setTimeout(() => {
           deleteTask(task);
@@ -237,62 +239,72 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    // Editable title for the task
     const taskTitle = document.createElement('span');
     taskTitle.classList.add('task-title');
     taskTitle.textContent = task.title;
+    taskTitle.contentEditable = true; // Makes the title editable
+    taskTitle.addEventListener('blur', () => {
+      task.title = taskTitle.textContent.trim(); // Save changes when editing ends
+      saveTask(task); // Persist updated task title in localStorage
+    });
 
-    // Buttons for prioritization and deletion
+    // Container for the control buttons (e.g., prioritize and delete)
     const buttonContainer = document.createElement('div');
     buttonContainer.classList.add('task-buttons');
 
+    // Button to toggle prioritization status
     const prioritizeButton = document.createElement('button');
     prioritizeButton.classList.add('prioritize-task-button');
     prioritizeButton.textContent = task.prioritized
       ? 'Unprioritize'
       : 'Prioritize';
     prioritizeButton.addEventListener('click', () => {
-      task.prioritized = !task.prioritized;
+      task.prioritized = !task.prioritized; // Toggle prioritization
       prioritizeButton.textContent = task.prioritized
         ? 'Unprioritize'
         : 'Prioritize';
-      saveTask(task);
+      saveTask(task); // Persist updated prioritization status
     });
 
+    // Button to delete the task
     const deleteButton = document.createElement('button');
     deleteButton.classList.add('delete-task-button');
     deleteButton.textContent = 'Delete';
     deleteButton.addEventListener('click', () => {
-      deleteTask(task);
-      taskDiv.remove();
+      deleteTask(task); // Remove task from storage
+      taskDiv.remove(); // Remove task from the DOM
     });
 
-    // Append buttons to the container
+    // Add buttons to the control container
     buttonContainer.appendChild(prioritizeButton);
     buttonContainer.appendChild(deleteButton);
 
-    // Append row 1 elements for a task
+    // Append all elements to the first row of the task
     row1.appendChild(checkbox);
     row1.appendChild(taskTitle);
     row1.appendChild(buttonContainer);
 
-    // Row 2: Due date and category dropdown
+    // Row 2: Includes due date input and category dropdown
     const row2 = document.createElement('div');
     row2.classList.add('task-row');
 
+    // Input for setting the task's due date
     const dueDate = document.createElement('input');
     dueDate.type = 'date';
     dueDate.classList.add('task-due-date');
     dueDate.value = task.dueDate;
 
     dueDate.addEventListener('change', () => {
-      task.dueDate = dueDate.value;
-      saveTask(task);
+      task.dueDate = dueDate.value; // Update task due date
+      saveTask(task); // Persist updated due date
     });
 
+    // Dropdown for assigning the task to a category
     const categorySelect = document.createElement('select');
     categorySelect.classList.add('task-category');
 
-    // Placeholder option for uncategorized tasks
+    // Default "Uncategorized" option
     const placeholderOption = document.createElement('option');
     placeholderOption.value = '';
     placeholderOption.textContent = 'Uncategorized';
@@ -300,27 +312,29 @@ document.addEventListener('DOMContentLoaded', () => {
     placeholderOption.selected = task.category === 'Uncategorized';
     categorySelect.appendChild(placeholderOption);
 
-    // Populate category dropdown
+    // Populate dropdown with available categories
     categories.forEach((category) => {
       const option = document.createElement('option');
       option.value = category;
       option.textContent = category;
-      option.selected = task.category === category;
+      option.selected = task.category === category; // Pre-select the current category
       categorySelect.appendChild(option);
     });
 
     categorySelect.addEventListener('change', () => {
-      task.category = categorySelect.value || 'Uncategorized';
-      saveTask(task);
+      task.category = categorySelect.value || 'Uncategorized'; // Update category
+      saveTask(task); // Persist updated category
     });
 
-    // Append row 2 elements for a task
+    // Add due date and category dropdown to the second row
     row2.appendChild(dueDate);
     row2.appendChild(categorySelect);
 
-    // Append rows to the task container
+    // Add both rows to the task container
     taskDiv.appendChild(row1);
     taskDiv.appendChild(row2);
+
+    // Append the task container to the main task display area
     taskContainer.appendChild(taskDiv);
   }
 
