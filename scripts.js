@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const addTaskButton = document.getElementById('add-task-button');
   const addCategoryButton = document.getElementById('add-category-button');
   const categoryList = document.getElementById('category-list');
+  let paginationPage = 1; // Tracks the current pagination page
+  const tasksPerPage = 7; // Maximum tasks per page
 
   // Default and saved categories
   const defaultCategories = ['Work', 'Personal', 'Shopping'];
@@ -114,6 +116,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function deleteCategory(category) {
     categories = categories.filter((c) => c !== category);
     loadCategories();
+
+    // Update tasks in localStorage
+    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    const updatedTasks = tasks.map((task) => {
+      if (task.category === category) {
+        task.category = 'Uncategorized'; // Reset to "Uncategorized"
+      }
+      return task;
+    });
+
+    // Save updated tasks to localStorage
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
   }
 
   // Filter tasks based on the selected category or condition
@@ -151,7 +165,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
       taskDiv.classList.toggle('hidden', !shouldShow);
     });
+
+    // Apply pagination after filtering
+    paginateTasks();
   }
+
+  function paginateTasks() {
+    const taskDivs = Array.from(document.querySelectorAll('.task')).filter(
+      (task) => !task.classList.contains('hidden')
+    ); // Only include visible (filtered) tasks
+    const totalTasks = taskDivs.length;
+    const totalPages = Math.ceil(totalTasks / tasksPerPage);
+
+    // Adjust the current page if it exceeds the total number of pages
+    if (paginationPage > totalPages) {
+      paginationPage = totalPages;
+    }
+
+    // Update pagination controls
+    document.getElementById('prev-page').disabled = paginationPage === 1;
+    document.getElementById('next-page').disabled =
+      paginationPage === totalPages || totalPages === 0;
+
+    // Show tasks for the current page, hide others
+    taskDivs.forEach((task, index) => {
+      task.style.display =
+        index >= (paginationPage - 1) * tasksPerPage &&
+          index < paginationPage * tasksPerPage
+          ? 'block'
+          : 'none';
+    });
+
+    // Update the current page number
+    document.getElementById('page-number').textContent = `Page ${paginationPage}`;
+  }
+
+  document.getElementById('prev-page').addEventListener('click', () => {
+    if (paginationPage > 1) {
+      paginationPage--;
+      paginateTasks();
+    }
+  });
+
+  document.getElementById('next-page').addEventListener('click', () => {
+    const taskDivs = Array.from(document.querySelectorAll('.task')).filter(
+      (task) => !task.classList.contains('hidden')
+    );
+    const totalTasks = taskDivs.length;
+    const totalPages = Math.ceil(totalTasks / tasksPerPage);
+
+    if (paginationPage < totalPages) {
+      paginationPage++;
+      paginateTasks();
+    }
+  });
 
   // Update all dropdown menus to reflect current categories
   function updateAllDropdowns() {
@@ -212,10 +279,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Display task in the task container
   function displayTask(task) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayString = today.toISOString().split('T')[0];
+
     // Create the main container for the task
     const taskDiv = document.createElement('div');
     taskDiv.classList.add('task');
     taskDiv.dataset.id = task.id || Date.now();
+
+    // Apply prioritized and overdue classes based on task properties
+    if (task.prioritized) {
+      taskDiv.classList.add('prioritized'); // Add CSS class for prioritized tasks
+    }
+    if (task.dueDate && task.dueDate < todayString) {
+      taskDiv.classList.add('overdue'); // Add CSS class for overdue tasks
+    }
 
     // Row 1: Includes the checkbox, title, and control buttons
     const row1 = document.createElement('div');
@@ -261,6 +340,13 @@ document.addEventListener('DOMContentLoaded', () => {
       : 'Prioritize';
     prioritizeButton.addEventListener('click', () => {
       task.prioritized = !task.prioritized; // Toggle prioritization
+
+      if (task.prioritized) {
+        taskDiv.classList.add('prioritized'); // Add prioritized class
+      } else {
+        taskDiv.classList.remove('prioritized'); // Remove prioritized class
+      }
+
       prioritizeButton.textContent = task.prioritized
         ? 'Unprioritize'
         : 'Prioritize';
@@ -296,7 +382,19 @@ document.addEventListener('DOMContentLoaded', () => {
     dueDate.value = task.dueDate;
 
     dueDate.addEventListener('change', () => {
+      const newDueDate = dueDate.value;
       task.dueDate = dueDate.value; // Update task due date
+
+      if (newDueDate && newDueDate < todayString) {
+        taskDiv.classList.add('overdue'); // Add overdue class
+        taskDiv.classList.remove('prioritized'); // Remove prioritized class if applicable
+      } else {
+        taskDiv.classList.remove('overdue'); // Remove overdue class
+        if (task.prioritized) {
+          taskDiv.classList.add('prioritized'); // Reapply prioritized class if applicable
+        }
+      }
+
       saveTask(task); // Persist updated due date
     });
 
@@ -335,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
     taskDiv.appendChild(row2);
 
     // Append the task container to the main task display area
-    taskContainer.appendChild(taskDiv);
+    taskContainer.prepend(taskDiv);
   }
 
   // Delete a task and update the task list

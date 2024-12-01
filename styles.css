@@ -47,7 +47,7 @@ button:hover {
   z-index: 10;
 }
 
-.menu-icon:hover + .sidebar-menu,
+.menu-icon:hover+.sidebar-menu,
 .sidebar-menu:hover {
   left: 0;
 }
@@ -103,7 +103,8 @@ button:hover {
   display: block;
   width: 100%;
   padding: 5px 10px;
-  text-decoration: none; /* Remove underline */
+  text-decoration: none;
+  /* Remove underline */
   color: #fff;
 }
 
@@ -134,12 +135,52 @@ main {
   flex: 1;
 }
 
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.pagination-container button {
+  background-color: #6a7a66;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.pagination-container button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-container span {
+  font-weight: bold;
+  color: #333;
+}
+
 .task-container {
   background-color: #fff;
-  border-radius: 5px;
+  border-radius: 7px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  padding: 10px;
   margin-bottom: 20px;
+  overflow: hidden;
+}
+
+/* Show message if no tasks are visible */
+.task-container:not(:has(.task:not(.hidden)))::before {
+  content: "There's currently no task on this page.";
+  display: block;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #555;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
 }
 
 /* Task Element */
@@ -159,17 +200,20 @@ main {
 }
 
 .task-checkbox {
-  appearance: none; /* Remove default checkbox styling */
+  appearance: none;
+  /* Remove default checkbox styling */
   width: 1.1em;
   height: 1.1em;
   border: 1.5px solid #4f646f;
-  border-radius: 50%; /* Make the checkbox circular */
+  border-radius: 50%;
+  /* Make the checkbox circular */
   cursor: pointer;
   margin-top: 0;
+  background-color: #fff;
 }
 
 .task-checkbox:hover {
-  background-color: rgb(200, 200, 200);
+  background-color: #dddddd;
 }
 
 .task-checkbox:checked {
@@ -182,6 +226,21 @@ main {
   font-size: 1em;
   color: #333;
   text-align: left;
+}
+
+/* Highlight for prioritized tasks */
+.task.prioritized {
+  background-color: #ffe9c8;
+}
+
+/* Gray out overdue tasks */
+.task.overdue {
+  background-color: #e3e3e3;
+}
+
+/* Give the due date a red color for overdue tasks */
+.task.overdue .task-due-date {
+  color: #ff0800;
 }
 
 .task-buttons {
@@ -249,7 +308,8 @@ main {
 
 /* Placeholder Effect for Date Input */
 .task-due-date:required:invalid {
-  color: transparent; /* Hides invalid or default text */
+  color: transparent;
+  /* Hides invalid or default text */
 }
 
 .task-due-date::placeholder {
@@ -259,7 +319,8 @@ main {
 
 /* Custom placeholder when date is empty */
 .task-due-date:not(:focus):required:invalid::after {
-  content: 'mm/dd/yyyy'; /* Placeholder date */
+  content: 'mm/dd/yyyy';
+  /* Placeholder date */
   color: #aaa;
   font-style: italic;
   position: absolute;
