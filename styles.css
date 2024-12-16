@@ -435,6 +435,8 @@ main {
     width: 35px;
     height: 35px;
     font-size: 1.5em;
+    margin-right: 0;
+    margin-bottom: 0;
   }
 
   .delete-task-button,
@@ -449,5 +451,9 @@ main {
 
   .task-container {
     margin: 0;
+  }
+
+  .pagination-container {
+    margin-right: 0;
   }
 }
