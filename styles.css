@@ -141,6 +141,7 @@ main {
   align-items: center;
   margin-top: 20px;
   gap: 10px;
+  margin-right: 1em;
 }
 
 .pagination-container button {
@@ -163,6 +164,7 @@ main {
 }
 
 .task-container {
+  margin: 0 1em;
   background-color: #fff;
   border-radius: 7px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -281,6 +283,8 @@ main {
   align-items: center;
   justify-content: center;
   margin-left: auto;
+  margin-right: 0.5em;
+  margin-bottom: 0.5em;
 }
 
 #add-task-button:hover {
@@ -334,9 +338,81 @@ main {
   text-align: left;
 }
 
+/* Modal Styles */
+.modal {
+  display: none;
+  /* Hidden by default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+}
+
+.modal-content {
+  background-color: #dee7e7;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+  margin-bottom: 35px;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-actions button {
+  color: #fff;
+  margin: 5px;
+  margin-top: 10px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#save-task-button {
+  background-color: #596655;
+}
+
+#cancel-task-button {
+  background-color: #ba4e4a;
+}
+
+.modal-actions button:hover {
+  background-color: #c4a579;
+}
+
+.modal-content input,
+.modal-content select {
+  font-family: Papyrus, sans-serif;
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: .9em;
+  box-sizing: border-box;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .menu-icon {
+    margin-left: 0;
     top: 15px;
     left: 15px;
   }
@@ -348,6 +424,11 @@ main {
   main {
     margin-left: 50px;
     padding: 10px;
+  }
+
+  h1 {
+    margin-left: 30px;
+    margin-bottom: 5px;
   }
 
   #add-task-button {
@@ -364,5 +445,9 @@ main {
 
   .task-title {
     font-size: 0.9em;
+  }
+
+  .task-container {
+    margin: 0;
   }
 }

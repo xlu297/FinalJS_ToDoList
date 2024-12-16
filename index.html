@@ -45,6 +45,29 @@
     </div>
   </main>
 
+  <!-- Add Task Modal -->
+  <div id="add-task-modal" class="modal">
+    <div class="modal-content">
+      <h2>Add New Task</h2>
+      <label for="task-title-input">Task Title:</label>
+      <input type="text" id="task-title-input" placeholder="Enter task title" />
+
+      <label for="task-due-date-input">Due Date:</label>
+      <input type="date" id="task-due-date-input" />
+
+      <label for="task-category-select">Category:</label>
+      <select id="task-category-select">
+        <option value="">Uncategorized</option>
+        <!-- Categories will load dynamically -->
+      </select>
+
+      <div class="modal-actions">
+        <button id="save-task-button">Save</button>
+        <button id="cancel-task-button">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <script src="scripts.js"></script>
 </body>
 

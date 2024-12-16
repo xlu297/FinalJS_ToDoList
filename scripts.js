@@ -4,6 +4,12 @@
 document.addEventListener('DOMContentLoaded', () => {
   const taskContainer = document.querySelector('.task-container');
   const addTaskButton = document.getElementById('add-task-button');
+  const addTaskModal = document.getElementById('add-task-modal');
+  const taskTitleInput = document.getElementById('task-title-input');
+  const taskDueDateInput = document.getElementById('task-due-date-input');
+  const taskCategorySelect = document.getElementById('task-category-select');
+  const saveTaskButton = document.getElementById('save-task-button');
+  const cancelTaskButton = document.getElementById('cancel-task-button');
   const addCategoryButton = document.getElementById('add-category-button');
   const categoryList = document.getElementById('category-list');
   let paginationPage = 1; // Tracks the current pagination page
@@ -440,24 +446,64 @@ document.addEventListener('DOMContentLoaded', () => {
   function deleteTask(taskToDelete) {
     const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
     const updatedTasks = tasks.filter((task) => task.id !== taskToDelete.id);
+
+    // Save the updated task list
     localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+
+    // Reload tasks and reapply pagination to update the display
+    loadTasks();
+    const urlParams = new URLSearchParams(window.location.search);
+    const filter = urlParams.get('category') || 'all';
+    setCategoryFilter(filter); // Reapply the filter for the current category
+    paginateTasks();
   }
 
-  // Add a new task when the button is clicked
-  if (addTaskButton) {
-    addTaskButton.addEventListener('click', () => {
-      const newTask = {
-        id: Date.now(),
-        title: 'New Task',
-        dueDate: '',
-        completed: false,
-        prioritized: false,
-        category: 'Uncategorized',
-      };
-      saveTask(newTask);
-      displayTask(newTask);
+  // Populate category options in the modal
+  function populateCategorySelect() {
+    taskCategorySelect.innerHTML = '<option value="">Uncategorized</option>';
+    categories.forEach((category) => {
+      const option = document.createElement('option');
+      option.value = category;
+      option.textContent = category;
+      taskCategorySelect.appendChild(option);
     });
   }
+
+  // Show the Add Task Modal
+  addTaskButton.addEventListener('click', () => {
+    populateCategorySelect();
+    addTaskModal.style.display = 'flex';
+  });
+
+  // Hide the Add Task Modal
+  function closeModal() {
+    addTaskModal.style.display = 'none';
+    taskTitleInput.value = '';
+    taskDueDateInput.value = '';
+    taskCategorySelect.value = '';
+  }
+
+  cancelTaskButton.addEventListener('click', closeModal);
+
+  // Save the Task
+  saveTaskButton.addEventListener('click', () => {
+    const newTask = {
+      id: Date.now(),
+      title: taskTitleInput.value.trim() || 'New Task',
+      dueDate: taskDueDateInput.value,
+      completed: false,
+      prioritized: false,
+      category: taskCategorySelect.value || 'Uncategorized',
+    };
+
+    saveTask(newTask); // Save the task to localStorage
+    loadTasks();       // Refresh the task display
+    const urlParams = new URLSearchParams(window.location.search);
+    const filter = urlParams.get('category') || 'all';
+    setCategoryFilter(filter); // Reapply the filter for the current category
+    paginateTasks();   // Apply pagination
+    closeModal();      // Close the modal
+  });
 
   // Initial setup: Load categories, load tasks, and add default task if none on home page
   loadCategories();
